@@ -21,6 +21,17 @@ int main() {
     voyagerRoute.removeWaypointAtBeginning();
     voyagerRoute.removeWaypointAtEnd();
     voyagerRoute.print();
+    voyagerRoute.traverseForward();
+    voyagerRoute.traverseBackward();
+    voyagerRoute.removeWaypointAtIndex(1);
+    voyagerRoute.traverseBackward();
+    voyagerRoute.addWaypointAtEnd(earth);
+    voyagerRoute.addWaypointAtEnd(saturn);
+    voyagerRoute.print();
+    voyagerRoute.setWaypoint(3, venus);
+    voyagerRoute.print();
+    cout<<voyagerRoute.getSize();
+
 
     /*voyagerRoute.addWaypointAtEnd(mars);
     voyagerRoute.addWaypointAtEnd(jupiter);

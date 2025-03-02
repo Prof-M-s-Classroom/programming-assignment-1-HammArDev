@@ -41,15 +41,15 @@ public:
         tail = nullptr;
         size = 0;
     }
-    // Destructor-come back to this
-    // ~SpaceRoute() {
-    //     Node<T>* curr = head;
-    //     while (head) {
-    //         head=head->next;
-    //         next->prev=nullptr;
-    //
-    //     }
-    // }
+    /*Destructor-come back to this
+    ~SpaceRoute() {
+        Node<T>* curr = head;
+        while (head) {
+            head=head->next;
+            next->prev=nullptr;
+
+        }
+     }*/
     /**This method adds the data to the beginning of the route
      * @param data
      */
@@ -90,7 +90,6 @@ public:
      * @param data - waypoint
      */
     void addWaypointAtIndex(int index, T& data) {
-        //TODO check for valid index
         if (index<0 || index>size-1) {
             cout<<"Invalid index"<<endl;
         }else if (index==0) {
@@ -121,6 +120,7 @@ public:
             oldHead->next=nullptr;
             head->prev=nullptr;
             delete oldHead;
+            --size;
         }
     }
 
@@ -136,6 +136,7 @@ public:
             tail->next=nullptr;
             oldTail->next=nullptr;
             delete oldTail;
+            --size;
         }
     }
 
@@ -145,7 +146,28 @@ public:
      *
      *
      */
-    void removeWaypointAtIndex(int index);
+    void removeWaypointAtIndex(int index) {
+        if (index==0) {
+            removeWaypointAtBeginning();
+            return;
+        }else if (index==size-1) {
+            removeWaypointAtEnd();
+            return;
+        }else{
+            Node<T>* delNode= getWaypoint(index);
+            if (!delNode) {
+                cout<<"Invalid index"<<endl;
+            }else{
+                Node<T>* predNode=delNode->prev;
+                predNode->next=delNode->next;
+                delNode->next->prev=predNode;
+                delNode->next=nullptr;
+                delNode->prev=nullptr;
+                delete delNode;
+                --size;
+        }
+    }
+    }
 
     /**This method prints out the Space Route in forward order
      * Is O(n) as it needs to visit every Node once
@@ -158,24 +180,58 @@ public:
         }
         cout << endl;
     }
-    }
+
     /**This method prints out the Space Route in forward order
      * Is O(n) as it needs to visit every Node once
      */
-    void traverseBackward()
+    void traverseBackward() {
+    Node<T>* current = tail;
+    while (current) {
+        current->print();
+        current = current->prev;
+    }
+    cout << endl;
+}
 
     /**This method retrieves the waypoint at your desired index
      * Exception-index is out of bounds(<0 or greater than size)
      * @param index
      * @return waypoint with data, if exception is encountered, will return null instead
      */
-    Node<T>* getWaypoint(int index);
+    Node<T>* getWaypoint(int index) {
+        if (index<0||index>size-1) {
+            return nullptr;
+        }
+        if (index==size-1) {
+            return tail;
+        }else if (index>(size+1)/2) {
+            int newIndex = size-1-index;
+            Node<T>* curr = tail;
+            for (int i=0; i<newIndex; ++i) {
+                curr=curr->prev;
+            }
+            return curr;
+        }else {
+            Node<T>* curr = head;
+            for (int i=0; i<index; ++i) {
+                curr=curr->next;
+            }
+            return curr;
+        }
+    }
 
     /**This method modifies an existing waypoint at your desired index
      * @param index
      * @param data - the replacement data for that node
      */
-    void setWaypoint(int index, T& data);
+    void setWaypoint(int index, T& data) {
+        Node<T>* curr = getWaypoint(index);
+        if (!curr) {
+            cout<<"Invalid Index"<<endl;
+        }else {
+            curr->data=data;
+        }
+    }
 
     /**Displays the entire space route
      * Is O(n) as it needs to visit every Node once
@@ -189,5 +245,11 @@ public:
             cout << endl;
         }
 
+    /**Returns the size of list
+     * @return int
+     */
+    int getSize() {
+        return size;
+    }
 };
 
