@@ -35,22 +35,32 @@ private:
     int size;
 
 public:
-    // Constructor
+    /**Constructor
+     * O(1) as it has 3 constant time operations
+     */
     SpaceRoute() {
         head = nullptr;
         tail = nullptr;
         size = 0;
     }
-    /*Destructor-come back to this
-    ~SpaceRoute() {
-        Node<T>* curr = head;
-        while (head) {
-            head=head->next;
-            next->prev=nullptr;
 
+    /**Destructor
+     * O(n) as it has to visit every node and delete it
+     */
+    ~SpaceRoute() {
+        Node<T>* oldHead=head;
+        while (oldHead!=tail) {
+            head=oldHead->next;
+            oldHead->next=nullptr;
+            head->prev=nullptr;
+            delete oldHead;
+            oldHead=head;
         }
-     }*/
+        delete head;
+    }
+
     /**This method adds the data to the beginning of the route
+     *O(1) because of the instant access to the beginning by the head pointer
      * @param data
      */
     void addWaypointAtBeginning(T& data) {
@@ -68,6 +78,7 @@ public:
     }
 
     /** This method adds the data to the end of the route
+     * O(1) because of the instant access to the end by the tail pointer
      * @param data
      */
     void addWaypointAtEnd(T& data) {
@@ -86,20 +97,23 @@ public:
 
     /**This inserts the waypoint at the specified index
      * Exception-index is out of bounds(<0 or greater than size)
+     * O(n) because it calls a O(n) function, getWaypoint()
      * @param index - integer
      * @param data - waypoint
      */
     void addWaypointAtIndex(int index, T& data) {
-        if (index<0 || index>size-1) {
-            cout<<"Invalid index"<<endl;
-        }else if (index==0) {
+        if (index==0) {
             addWaypointAtBeginning(data);
+            return;
+        }if (index==size-1) {
+            addWaypointAtEnd(data);
+            return;
+        }
+        Node<T>* predNode = getWaypoint(index);
+        if (!predNode) {
+            cout<<"Invalid index"<<endl;
         }else{
             Node<T>* newNode = new Node(data);
-            Node<T>* predNode = head;
-            for (int i = 0; i<index-1; ++i) {
-                predNode=predNode->next;
-            }
             newNode->next=predNode->next;
             newNode->next->prev = newNode;
             predNode->next=newNode;
@@ -109,6 +123,7 @@ public:
     }
 
     /**This method removes the data to the beginning of the route
+     * O(1) because of the instant access to the beginning by the head pointer
      */
     void removeWaypointAtBeginning() {
         if (head==tail) {
@@ -125,6 +140,7 @@ public:
     }
 
     /**This method removes the data to the end of the route
+     *O(1) because of the instant access to the end by the tail pointer
      */
     void removeWaypointAtEnd() {
         if (head==tail) {
@@ -143,8 +159,7 @@ public:
     /**This inserts the waypoint at the specified index
      * Exception-index is out of bounds(<0 or greater than size)
      * @param index
-     *
-     *
+     * O(n) because it calls a O(n) function, getWaypoint()
      */
     void removeWaypointAtIndex(int index) {
         if (index==0) {
@@ -195,6 +210,7 @@ public:
 
     /**This method retrieves the waypoint at your desired index
      * Exception-index is out of bounds(<0 or greater than size)
+     * O(n) as, though it splits the search into 2, the algorithm still needs to search n/2 elements
      * @param index
      * @return waypoint with data, if exception is encountered, will return null instead
      */
@@ -221,6 +237,7 @@ public:
     }
 
     /**This method modifies an existing waypoint at your desired index
+     *O(n) because it calls a O(n) function, getWaypoint()
      * @param index
      * @param data - the replacement data for that node
      */
